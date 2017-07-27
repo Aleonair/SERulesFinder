@@ -56,7 +56,6 @@ int FindClassType(){
 }
 
 int Clean(){
-    NumOfFile++;
     Rule = "";
     Scontext = "";
     Tcontext = "";
@@ -81,6 +80,7 @@ int main()
         if(Cat.find(ForCat) == Cat.end() && Scontext != "untrusted_app"){
             Output << "sepolicy-inject -s " << Scontext << " -t " << Tcontext << " -c " << Tclass <<  " -p " << Rule << " -P sepolicy" << NumOfFile << " -o sepolicy" << NumOfFile + 1 << endl;
             Cat.insert(ForCat);
+            NumOfFile++;
         }
         Clean();
     }
