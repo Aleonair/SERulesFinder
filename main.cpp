@@ -5,86 +5,86 @@
 
 using namespace std;
 
-string ReadFromFile, Rule, Scontext, Tcontext, Tclass, ForCat;
-ifstream Input;
-ofstream Output;
-int TmpBegin, TmpEnd, NumOfFile = 0;
-set <string> Cat;
+string READ_FROM_FILE, DENIED_ARG, SCONTEXT, TCONTEXT, CLASS_TYPE, FOR_DTB;
+ifstream INPUT_FILE;
+ofstream OUTPUT_FILE;
+int TMP_BEGIN, TMP_END, CURRENT_FILE = 0;
+set <string> DTB;
 
-int FindDeniedType(){
-    TmpBegin = ReadFromFile.find("denied { ") + 9;
-    TmpEnd = ReadFromFile.find(" }");
-    for(int i = TmpBegin; i < TmpEnd; i++){
-        Rule = Rule + ReadFromFile[i];
+int CLEAN_STRINGS(){
+    DENIED_ARG = "";
+    SCONTEXT = "";
+    TCONTEXT = "";
+    CLASS_TYPE = "";
+    return 0;
+}
+
+int FIND_DENIED_ARG(){
+    TMP_BEGIN = READ_FROM_FILE.find("denied") + 9;
+    TMP_END = READ_FROM_FILE.find(" }");
+    for(int i = TMP_BEGIN; i < TMP_END; i++){
+        DENIED_ARG = DENIED_ARG + READ_FROM_FILE[i];
     }
     return 0;
 }
 
-int FindSCType(){
-    if(ReadFromFile.find("scontext=u:r:") != - 1.0){
-        TmpBegin = ReadFromFile.find("scontext=u:r:") + 13;
+int FIND_SCONTEXT(){
+    if(READ_FROM_FILE.find("scontext=u:r:") != - 1){
+        TMP_BEGIN = READ_FROM_FILE.find("scontext=u:r:") + 13;
     }else{
-        TmpBegin = ReadFromFile.find("scontext=u:object_r:") + 20;
+        TMP_BEGIN = READ_FROM_FILE.find("scontext=u:object_r:") + 20;
     }
-    while(ReadFromFile[TmpBegin] != ':'){
-        Scontext = Scontext + ReadFromFile[TmpBegin];
-        TmpBegin++;
+    while(READ_FROM_FILE[TMP_BEGIN] != ':'){
+        SCONTEXT = SCONTEXT + READ_FROM_FILE[TMP_BEGIN];
+        TMP_BEGIN++;
     }
     return 0;
 }
 
-int FindTCType(){
-    if(ReadFromFile.find("tcontext=u:r:") != - 1.0){
-        TmpBegin = ReadFromFile.find("tcontext=u:r:") + 13;
+int FIND_TCONTEXT(){
+    if(READ_FROM_FILE.find("tcontext=u:r:") != - 1){
+        TMP_BEGIN = READ_FROM_FILE.find("tcontext=u:r:") + 13;
     }else{
-        TmpBegin = ReadFromFile.find("tcontext=u:object_r:") + 20;
+        TMP_BEGIN = READ_FROM_FILE.find("tcontext=u:object_r:") + 20;
     }
-    while(ReadFromFile[TmpBegin] != ':'){
-        Tcontext = Tcontext + ReadFromFile[TmpBegin];
-        TmpBegin++;
-    }
-    return 0;
-}
-
-int FindClassType(){
-    TmpBegin = ReadFromFile.find("tclass=") + 7;
-    while(ReadFromFile[TmpBegin] != ' '){
-        Tclass = Tclass + ReadFromFile[TmpBegin];
-        TmpBegin++;
+    while(READ_FROM_FILE[TMP_BEGIN] != ':'){
+        TCONTEXT = TCONTEXT + READ_FROM_FILE[TMP_BEGIN];
+        TMP_BEGIN++;
     }
     return 0;
 }
 
-int Clean(){
-    Rule = "";
-    Scontext = "";
-    Tcontext = "";
-    Tclass = "";
+int FIND_CLASS_TYPE(){
+    TMP_BEGIN = READ_FROM_FILE.find("tclass=") + 7;
+    while(READ_FROM_FILE[TMP_BEGIN] != ' '){
+        CLASS_TYPE = CLASS_TYPE + READ_FROM_FILE[TMP_BEGIN];
+        TMP_BEGIN++;
+    }
     return 0;
 }
 
 int main()
 {
-    Input.open("in.txt", ios::in);
-    Output.open("out.txt", ios::out);
+    INPUT_FILE.open("in.txt", ios::in);
+    OUTPUT_FILE.open("out.txt", ios::out);
     while(true){
-        getline(Input, ReadFromFile);
-        if(ReadFromFile == ""){
+        getline(INPUT_FILE, READ_FROM_FILE);
+        if(READ_FROM_FILE == ""){
             break;
         }
-        FindDeniedType();
-        FindSCType();
-        FindTCType();
-        FindClassType();
-        ForCat = Rule + Scontext + Tcontext + Tclass;
-        if(Cat.find(ForCat) == Cat.end() && Scontext != "untrusted_app"){
-            Output << "sepolicy-inject -s " << Scontext << " -t " << Tcontext << " -c " << Tclass <<  " -p " << Rule << " -P sepolicy" << NumOfFile << " -o sepolicy" << NumOfFile + 1 << endl;
-            Cat.insert(ForCat);
-            NumOfFile++;
+        FIND_DENIED_ARG();
+        FIND_SCONTEXT();
+        FIND_TCONTEXT();
+        FIND_CLASS_TYPE();
+        FOR_DTB = DENIED_ARG + SCONTEXT + TCONTEXT + CLASS_TYPE;
+        if(DTB.find(FOR_DTB) == DTB.end() && SCONTEXT != "untrusted_app"){
+            OUTPUT_FILE << "sepolicy-inject -s " << SCONTEXT << " -t " << TCONTEXT << " -c " << CLASS_TYPE << " -p " << DENIED_ARG << " -P sepolicy" << CURRENT_FILE << " -o sepolicy" << CURRENT_FILE + 1 << endl;
+            DTB.insert(FOR_DTB);
+            CURRENT_FILE++;
         }
-        Clean();
+        CLEAN_STRINGS();
     }
-    Input.close();
-    Output.close();
+    INPUT_FILE.close();
+    OUTPUT_FILE.close();
     return 0;
 }
